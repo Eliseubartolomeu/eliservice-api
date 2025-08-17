@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\AppointmentResource;
 use Illuminate\Support\Facades\{
     Validator, Hash, Auth, DB,
 };
@@ -12,8 +13,9 @@ use App\Http\Controllers\AuthController;
 use App\Models\{
     Appointment as AP,
 };
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
+use Illuminate\Support\{
+    Carbon, Str
+};
 
 class AppointmentController extends Controller
 {
@@ -22,7 +24,24 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        //
+        try {
+
+            $AuthId = Auth::user()->id;
+    
+            $appointments = AP::where('user_id', $AuthId)->get();
+            
+            $cleanAppointments = AppointmentResource::collection($appointments);
+
+            return response()->json([
+                'appointments'=> $cleanAppointments
+            
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Algo deu errado! Tente mais tarde...'
+            ], 500);
+        }
     }
 
     /**
@@ -58,12 +77,12 @@ class AppointmentController extends Controller
             return response()->json([
                 'message '=> 'Erro ao agendar serviço',
                 'erros' => $validator
-            ], 500);
+            ], 400);
         }
 
 
         $serviceData = [
-            'user_id' => '6151cbff-ebf3-4190-b9c3-f9c090256ee4',//Auth::user()->id, 
+            'user_id' => Auth::user()->id, 
             'service_id' => $request->service,
             'date' => $request->date,
             'start_time' => $request->start_time
@@ -73,7 +92,7 @@ class AppointmentController extends Controller
 
         return response()->json([
             'message' => 'Serviço agendado com sucesso!',
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -81,7 +100,21 @@ class AppointmentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $appointment = AP::findOrfail($id);
+    
+            $cleanAppointment = new AppointmentResource($appointment);
+
+            return response()->json([
+                'appointment'=> $cleanAppointment
+            
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Algo deu errado! Tente mais tarde...'
+            ], 500);
+        }
     }
 
     /**
@@ -114,7 +147,7 @@ class AppointmentController extends Controller
             return response()->json([
                 'message '=> 'Erro ao atualizar os dados do agendamento',
                 'erros' => $validator
-            ], 500);
+            ], 400);
         }
 
         $user = Auth::user();
@@ -122,7 +155,7 @@ class AppointmentController extends Controller
         if ($service->user_id !== $user->id) {
             return response()->json([
                 'message '=> 'Algo deu errado! Tente mais tarde',
-            ], 404);
+            ], 400);
         }
 
         $serviceData = [
@@ -134,7 +167,7 @@ class AppointmentController extends Controller
 
         return response()->json([
             'message' => 'Agendamento atualizado com sucesso!',
-        ], 200);
+        ], 201);
     }
 
     /**

@@ -15,11 +15,18 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $services = SV::all();
+        try {
+            $services = SV::all();
+    
+            return response()->json([
+                'services' => $services
+            ], 200);
 
-        return response()->json([
-            'services' => $services
-        ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Algo deu errado! Tente mais tarde...'
+            ], 500);
+        }
     }
 
     /**

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use \Illuminate\Http\JsonResponse;
-
-use Illuminate\Support\Facades\{Validator, Hash, Auth};
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\{Validator, Hash, Auth, DB};
 use Illuminate\Http\RedirectResponse;
 use App\Models\User as US;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +30,7 @@ class LoginController extends Controller
                 return response()->json([
                     'message '=> 'Erro ao iniciar sessão',
                     'erros' => $validator
-                ], 500);
+                ], 400);
             }
     
             $credentials = $request->only('email', 'password');
@@ -38,7 +38,10 @@ class LoginController extends Controller
             if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
                 
                 $user = Auth::user();
-                
+
+                $isAuth = DB::table('personal_access_tokens')
+                ->where('tokenable_id', $user->id)->delete();
+
                 $token = $request->user()->createToken('api-token')->plainTextToken;
         
                 return $this->SuccessfulLogin($user, $token);
@@ -46,9 +49,11 @@ class LoginController extends Controller
             }else {
                 return $this->FailedLogin();
             }
+
+            
         } catch (\Throwable $th) {
             return response()->json([
-                'message'=> 'Desculpa houve um erro! Tente mais tarde...'
+                'message' => 'Algo deu errado! Tente mais tarde...'
             ], 500);
         }
     }
@@ -57,13 +62,14 @@ class LoginController extends Controller
      * Metodo para manipular um login sucedido
      */
     private function SuccessfulLogin($user, $token)
-    {        
+    {
+        $authUserData = new UserResource($user);        
         return response()->json([
             'status'=>'true',
             'token'=>$token,
-            'user'=>$user,
+            'user'=>$authUserData,
             'message'=> $user->name . ' Seja bem vindo!',
-        ], 201);
+        ], 200);
 
     }
 
@@ -75,7 +81,7 @@ class LoginController extends Controller
         return response()->json([
             'status'=>'false',
             'message'=>'Dados incorretos! Revê o que escreveu errado e tente novamente',
-        ], 404);
+        ], 400);
     }
 
     public function logout(US $user): JsonResponse 
@@ -88,6 +94,7 @@ class LoginController extends Controller
                 'status'=>'true',
                 'message'=>'A sua sessão foi terminada com sucesso!',
             ], 200);
+
         } catch (\Throwable $th) {
             return response()->json([
                 'status'=>'false',
