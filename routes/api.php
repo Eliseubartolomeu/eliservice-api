@@ -12,13 +12,13 @@ Route::get('/', function (Request $request) {
     ]);
 });
 
-
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::get('/logout/{user}', [LoginController::class, 'logout']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/home', [HomeController::class, 'index']);
     Route::resource('/profile', ProfileController::class);
+    Route::delete('/delete-profile/{id}', [ProfileController::class, 'deleteAcount']);
     Route::resource('/appointments', AppointmentController::class);
     Route::resource('/services', ServiceController::class);
 

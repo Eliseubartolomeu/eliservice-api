@@ -14,6 +14,9 @@ use Illuminate\Support\{Carbon, Str};
 
 class LoginController extends Controller
 {
+    /**
+     * Método para gerenciar o login do usuário
+     */
     public function login(Request $request)
     {
         try {
@@ -30,7 +33,7 @@ class LoginController extends Controller
                 return response()->json([
                     'message '=> 'Erro ao iniciar sessão',
                     'erros' => $validator
-                ], 400);
+                ], 422);
             }
     
             $credentials = $request->only('email', 'password');
@@ -49,7 +52,6 @@ class LoginController extends Controller
             }else {
                 return $this->FailedLogin();
             }
-
             
         } catch (\Throwable $th) {
             return response()->json([
@@ -84,6 +86,10 @@ class LoginController extends Controller
         ], 400);
     }
 
+
+    /**
+     * Método para gerenciar o logout
+     */
     public function logout(US $user): JsonResponse 
     {
         try {
