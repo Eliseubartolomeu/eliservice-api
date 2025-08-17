@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
-    LoginController, HomeController, ProfileController, AppointmentController, ServiceController
+    LoginController, RegisterController, HomeController, ProfileController, AppointmentController, ServiceController
 };
 
 Route::get('/', function (Request $request) {
@@ -14,6 +14,8 @@ Route::get('/', function (Request $request) {
 
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::get('/logout/{user}', [LoginController::class, 'logout']);
+
+Route::post('/register', [RegisterController::class, 'store']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/home', [HomeController::class, 'index']);
