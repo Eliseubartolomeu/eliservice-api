@@ -33,7 +33,7 @@ class AppointmentController extends Controller
                 'appointments'=> $cleanAppointments            
             ], 200);
 
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json([
                 'message' => 'Algo deu errado! Tente mais tarde...'
             ], 500);

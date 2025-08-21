@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'Foto' => $this->photo,
             'Nome de usuário' => $this->username,
             'E-mail' => $this->email,
-            'Aderiu em' =>$this->created_at->format('d-m-y')
+            'Aderiu em' =>$this->created_at->format('d-m-Y')
         ];
     }
 }

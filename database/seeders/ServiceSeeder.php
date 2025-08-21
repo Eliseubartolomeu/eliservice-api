@@ -83,9 +83,11 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            Service::updateOrCreate(array_merge($service, [
-                'id' => (string) Str::uuid(),
-            ]));
+            Service::firstOrCreate(
+                ['name' => $service['name']],
+                array_merge($service, ['id' => (string) Str::uuid()]) 
+            );
+            
         }
 
     }

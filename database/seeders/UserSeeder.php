@@ -15,6 +15,11 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminRole = Role::where('name', 'admin')->first();
+        $clienteRole = Role::where('name', 'cliente')->first();
+
+        $clientPass = Hash::make('cliente123');
+
         $users = [
             [
                 'name' => 'Admin Geral',
@@ -22,56 +27,70 @@ class UserSeeder extends Seeder
                 'username' => 'admin',
                 'email' => 'admin@example.com',
                 'password' => Hash::make('admin123'),
-                'role_id' => '52d03998-dbb0-46d6-a428-9fa38ec84216',
+                'role_id' => $adminRole->id,
+            ],
+            [
+                'name' => 'Pedro Developer',
+                'photo' => null,
+                'username' => 'pedrodev',
+                'email' => 'pedrodev@example.com',
+                'password' => Hash::make('admin123'),
+                'role_id' => $adminRole->id,
+            ],
+            [
+                'name' => 'Feliciana Miguel',
+                'photo' => null,
+                'username' => 'felicianamiguel',
+                'email' => 'feliciana@example.com',
+                'password' => Hash::make('admin123'),
+                'role_id' => $adminRole->id,
             ],
             [
                 'name' => 'João Cliente',
                 'photo' => null,
                 'username' => 'joaocliente',
                 'email' => 'joao@example.com',
-                'password' => Hash::make('cliente123'),
-                'role_id' => '1c58e509-f820-4828-90e4-1c513ea83dac',
+                'password' => $clientPass,
+                'role_id' => $clienteRole->id,
             ],
             [
                 'name' => 'Maria da Silva',
                 'photo' => null,
                 'username' => 'mariasilva',
                 'email' => 'maria@example.com',
-                'password' => Hash::make('cliente123'),
-                'role_id' => '1c58e509-f820-4828-90e4-1c513ea83dac',
+                'password' => $clientPass,
+                'role_id' => $clienteRole->id,
             ],
             [
                 'name' => 'Carlos Oliveira',
                 'username' => 'carlosoliveira',
                 'email' => 'carlos@example.com',
-                'password' => Hash::make('cliente123'),
-                'role_id' => '1c58e509-f820-4828-90e4-1c513ea83dac',
+                'password' => $clientPass,
+                'role_id' => $clienteRole->id,
             ],
             [
                 'name' => 'Ana Paula',
                 'photo' => null,
                 'username' => 'anapaula',
                 'email' => 'ana@example.com',
-                'password' => Hash::make('cliente123'),
-                'role_id' => '1c58e509-f820-4828-90e4-1c513ea83dac',
+                'password' => $clientPass,
+                'role_id' => $clienteRole->id,
             ],
             [
                 'name' => 'Lucas Martins',
                 'photo' => null,
                 'username' => 'lucasm',
                 'email' => 'lucas@example.com',
-                'password' => Hash::make('cliente123'),
-                'role_id' => '1c58e509-f820-4828-90e4-1c513ea83dac',
+                'password' => $clientPass,
+                'role_id' => $clienteRole->id,
             ],
         ];
 
         foreach ($users as $user) {
-            // User::create(array_merge($user, [
-            //     'id' => (string) Str::uuid(), 
-            // ]));
-            User::updateOrCreate(array_merge($user, [
-                'id' => (string) Str::uuid(), 
-            ]));
+            User::firstOrCreate(
+                ['email' => $user['email']], 
+                array_merge($user, ['id' => (string) Str::uuid()])
+            );
         }
     }
 }

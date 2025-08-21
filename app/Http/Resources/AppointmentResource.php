@@ -41,7 +41,7 @@ class AppointmentResource extends JsonResource
         return [
             'Serviço' => $this->service->name,
             'Agendado para' => $newDate,
-            'Horário' => $this->start_time,
+            'Horário' => Carbon::parse($this->start_time)->format('h:i'),
             'Estado' => $this->status
         ];
     }

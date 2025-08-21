@@ -27,14 +27,11 @@ class RoleSeeder extends Seeder
             ],
         ];
 
-        // foreach ($roles as $roleData) {
-        //     Role::updateOrCreate(['name' => $roleData['name']], ['display_name'=> $roleData['display_name']], ['description' => $roleData['description']]);
-        // }
-
         foreach ($roles as $role) {
-            Role::updateOrCreate(array_merge($role, [
-                'id' => (string) Str::uuid(),
-            ]));
+            Role::firstOrCreate(
+                ['name' => $role['name']],
+                array_merge($role, ['id' => (string) Str::uuid()])
+            );
         }
     }
 }
