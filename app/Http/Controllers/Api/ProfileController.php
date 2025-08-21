@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\{Validator, Hash, Auth, DB,};
+use Illuminate\Support\Facades\{Hash, Auth, DB,};
 use Illuminate\Http\RedirectResponse;
 use App\Http\Resources\UserResource;
+use App\Http\Requests\Api\UserRequest as UsRequest;
 use App\Http\Controllers\AuthController;
 use App\Models\{
     User as US,
@@ -40,7 +41,7 @@ class ProfileController extends Controller
     /**
      * Método para atualizar dados do usuário
      */
-    public function update(Request $request, string $id)
+    public function update(UsRequest $request, string $id)
     {
         try{
             $user = Auth::user();
@@ -51,27 +52,7 @@ class ProfileController extends Controller
                 ], 404);
             }
 
-            $validator = Validator::make($request->all(), [
-                'name'=>'required|regex:/^[a-zA-ZÀ-úçÇ\s]+$/u|min:5|max:255',
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:1024',
-            ],[
-                'name.required'=>'É obrigatório fornecer um nome',
-                'name.regex'=>'Só é permitido usar nome com letras',
-                'name.min'=>'O nome deve conter no mínimo :min letras',
-                'name.max'=>'O nome deve conter no máximo :max letras',
-
-                'photo.image' => 'So pode carregar uma imagem',
-                'photo.mimes' => 'A imagem só pode ser peg,png,jpg,gif',
-                'photo.max' => 'O tamanho máximo da imagem deve ser de 1MB',
-
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'message '=> 'Erro ao atualizar os dados do perfil',
-                    'erros' => $validator
-                ], 422);
-            }
+            $userData = $request->validated();
 
             //Se o Usuário enviar alguma foto
             if ($request->hasFile('photo')){
@@ -93,10 +74,13 @@ class ProfileController extends Controller
                 $photo = $user->photo;
             }
 
-            $user->update([
-                'name' => preg_replace('/\s+/', ' ', $request->name),
+            $userData = [
+                'name' => $userData['name'],
                 'photo' => $photo,
-            ]);
+                'email'=> $userData['email'] ?? $user->email
+            ];
+
+            $user->update($userData);
 
             return response()->json([
                 'message' => 'Dados atualizados com sucesso!'

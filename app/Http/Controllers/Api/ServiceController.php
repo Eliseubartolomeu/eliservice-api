@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ServiceResource;
-use Illuminate\Support\Facades\{Validator, Hash, Auth, DB,};
 use Illuminate\Http\RedirectResponse;
-use App\Http\Controllers\AuthController;
 use App\Models\{
     Service as SV,
 };

@@ -32,7 +32,7 @@ class LoginController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'message '=> 'Erro ao iniciar sessão',
-                    'erros' => $validator
+                    'erros' => $validator->errors()
                 ], 422);
             }
     

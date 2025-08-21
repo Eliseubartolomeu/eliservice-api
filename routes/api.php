@@ -19,10 +19,10 @@ Route::post('/register', [RegisterController::class, 'store']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/home', [HomeController::class, 'index']);
-    Route::resource('/profile', ProfileController::class);
+    Route::Apiresource('/profile', ProfileController::class);
     Route::delete('/delete-profile/{id}', [ProfileController::class, 'deleteAcount']);
-    Route::resource('/appointments', AppointmentController::class);
-    Route::resource('/services', ServiceController::class);
+    Route::Apiresource('/appointments', AppointmentController::class);
+    Route::Apiresource('/services', ServiceController::class);
 
 
 });
