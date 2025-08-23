@@ -24,7 +24,7 @@ class UserRequest extends FormRequest
     {
         $rules = [
             'name'=>'required|regex:/^[a-zA-ZÀ-úçÇ\s]+$/u|min:5|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|min:6',
         ];
         
@@ -32,6 +32,13 @@ class UserRequest extends FormRequest
             $rules['email'] = 'sometimes|email|unique:users,email,' . Auth::id();
             $rules['password'] = 'sometimes';
             $rules['photo'] = 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:1024';
+        }
+
+        if ($this->isMethod('DELETE')) {
+            $rules['name'] = 'sometimes';
+            $rules['password'] = 'sometimes';
+            $rules['photo'] = 'sometimes';
+            $rules['email'] = 'required|email|max:255';
         }
 
         return $rules;
@@ -47,6 +54,7 @@ class UserRequest extends FormRequest
 
             'email.required' => 'O campo email é obrigatório.',
             'email.email' => 'Por favor, insira um endereço de email válido.',
+            'email.max'=>'O e-mail deve conter no máximo :max letras',
             'email.unique' => 'O email que digitou já está registado.',
             'password.required' => 'O campo palavra-passe é obrigatório.',
             'password.min' => 'A palavra-passe deve ter pelo menos 6 caracteres.',

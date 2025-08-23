@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -26,12 +29,43 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'status' => 'false',
+                    'status' => false,
                     'message' => 'Token de autenticação inválido',
                 ], 401);
             }
         
             return redirect()->route('logar');
+        });
+
+        // 403 - Proibido
+        $exceptions->render(function (AuthorizationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Você não tem permissão para acessar este recurso.',
+                ], 403);
+            }
+        });
+
+        // 404 - Não encontrado
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Recurso não encontrado.',
+                ], 404);
+            }
+        });
+
+        // 500 - Erros genéricos
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Erro interno no servidor.',
+                    'error' => config('app.debug') ? $e->getMessage() : null,
+                ], 500);
+            }
         });
 
     })->create();

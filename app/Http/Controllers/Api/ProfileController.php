@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\{Hash, Auth, DB,};
+use Illuminate\Support\Facades\{Hash, Auth, DB};
 use Illuminate\Http\RedirectResponse;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\Api\UserRequest as UsRequest;
@@ -17,6 +17,7 @@ use Illuminate\Support\{Carbon, Str};
 
 class ProfileController extends Controller
 {
+
     /**
      * Método para visualizar os dados do usuário
      */
@@ -39,17 +40,26 @@ class ProfileController extends Controller
     }
 
     /**
+     * Método para validar se o usuário é o dono do perfil
+     */
+    private function isOwner($user)
+    {
+        if (Auth::user()->id === $user->id) {
+
+            return true;
+        }    
+    }
+
+    /**
      * Método para atualizar dados do usuário
      */
     public function update(UsRequest $request, string $id)
     {
         try{
-            $user = Auth::user();
+            $user = US::findOrfail($id);
 
-            if ($id !== $user->id) {
-                return response()->json([
-                    'message '=> 'Algo deu errado! Tente mais tarde',
-                ], 404);
+            if (!$this->isOwner($user)) {
+                abort(404);
             }
 
             $userData = $request->validated();
@@ -86,10 +96,8 @@ class ProfileController extends Controller
                 'message' => 'Dados atualizados com sucesso!'
             ], 201);
 
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+        } catch (Throwable $th) {
+            abort(500);
         }
 
     }
@@ -97,25 +105,12 @@ class ProfileController extends Controller
     /**
      * Método para eliminar a conta do usuário
      */
-    public function deleteAcount(Request $request, string $id)
+    public function deleteAcount(UsRequest $request, string $id)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'email'=>'required|email|max:255',
-            ],[
-                'email.required'=>'É obrigatório fornecer o seu e-mail',
-                'email.email'=>'Deve fornecer um email válido',
-                'email.max'=>'O e-mail deve conter no máximo :max letras',
-            ]);
-            
-            if ($validator->fails()) {
-                return response()->json([
-                    'message '=> 'Erro ao deletar a conta',
-                    'erros' => $validator
-                ], 422);
-            }
-    
-            $Authuser = US::where('email', $request->email)->where('id', Auth::user()->id)->exists();
+        try {    
+            $userData = $request->validated();
+
+            $Authuser = US::where('email', $userData['email'])->where('id', Auth::user()->id)->exists();
     
             if (!$Authuser) {
                 return response()->json([
@@ -125,6 +120,10 @@ class ProfileController extends Controller
             }else {
                 $user = US::findOrfail($id);
                 
+                if (!$this->isOwner($user)) {
+                    abort(404);
+                }
+
                 $user->delete();
                 $user->tokens()->delete();
     
@@ -132,11 +131,8 @@ class ProfileController extends Controller
                     'message '=> 'Conta eliminada com sucesso',
                 ], 200);
             }
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
-        }
-           
+        } catch (Throwable $th) {
+            abort(500);
+        }  
     }
 }

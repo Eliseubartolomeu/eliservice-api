@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Requests\Api\AppointmentRequest as ApRequest;
@@ -17,13 +19,14 @@ use Illuminate\Support\{Carbon, Str};
 
 class AppointmentController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Método para visualizar todos os agendamentos de um determinado usuário
      */
     public function index()
     {
         try {
-
             $AuthId = Auth::user()->id;
             $appointments = AP::where('user_id', $AuthId)->get();
             
@@ -32,11 +35,9 @@ class AppointmentController extends Controller
             return response()->json([
                 'appointments'=> $cleanAppointments            
             ], 200);
-
-        } catch (Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+        
+        } catch (\Throwable $th) {
+            abort(500);
         }
     }
 
@@ -46,7 +47,6 @@ class AppointmentController extends Controller
     public function store(ApRequest $request)
     {
         try{
-
             $appointmentData = $request->validated();
 
             $appointmentData = [
@@ -63,9 +63,7 @@ class AppointmentController extends Controller
             ], 201);
 
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+            abort(500);
         }
     }
 
@@ -76,24 +74,22 @@ class AppointmentController extends Controller
     {
         try {
             $appointment = AP::findOrfail($id);
-
-            if (Auth::user()->id !== $appointment->user_id) {
-                return response()->json([
-                    'message '=> 'Erro ao buscar o agendamento!',
-                ], 400);
-            }
+            $this->authorize('view', $appointment);
             
             $cleanAppointment = new AppointmentResource($appointment);
 
             return response()->json([
                 'appointment'=> $cleanAppointment
             
-            ], 200);                
+            ], 200);               
 
-        } catch (\Throwable $th) {
+        }catch (AuthorizationException $e) {
             return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+                'message' => 'Você não tem permissão para acessar este agendamento.'
+            ], 403);
+
+        }catch (\Throwable $th) {
+            abort(500);
         }
     }
 
@@ -104,13 +100,11 @@ class AppointmentController extends Controller
     {
         try{
             $appointment = AP::findOrfail($id);
+
+            $this->authorize('update', $appointment);
+            
             $appointmentData = $request->validated();
 
-            if (Auth::user()->id !== $appointment->user_id) {
-                return response()->json([
-                    'message '=> 'Erro ao atualizar o agendamento!',
-                ], 400);
-            }            
 
             $appointmentData = [
                 'date' => $appointmentData['date'],
@@ -123,10 +117,13 @@ class AppointmentController extends Controller
                 'message' => 'Agendamento atualizado com sucesso!',
             ], 201);
 
-        } catch (\Throwable $th) {
+        }catch (AuthorizationException $e) {
             return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+                'message' => 'Você não tem permissão para acessar este agendamento.'
+            ], 403);
+
+        } catch (\Throwable $th) {
+            abort(500);
         }
     }
 
@@ -138,11 +135,7 @@ class AppointmentController extends Controller
         try{
             $appointment = AP::findOrfail($id);
 
-            if (Auth::user()->id !== $appointment->user_id) {
-                return response()->json([
-                    'message '=> 'Erro ao eliminar o agendamento!',
-                ], 400);
-            }
+            $this->authorize('delete', $appointment);
             
             $appointment->delete();
 
@@ -150,12 +143,13 @@ class AppointmentController extends Controller
                 'message' => 'Agendamento eliminado com sucesso!',
             ], 200);
 
-        
+        }catch (AuthorizationException $e) {
+            return response()->json([
+                'message' => 'Você não tem permissão para acessar este agendamento.'
+            ], 403);
 
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+            abort(500);
         }
     }
 }
