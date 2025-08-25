@@ -26,19 +26,14 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        try {
-            $AuthId = Auth::user()->id;
-            $appointments = AP::where('user_id', $AuthId)->get();
-            
-            $cleanAppointments = AppointmentResource::collection($appointments);
-
-            return response()->json([
-                'appointments'=> $cleanAppointments            
-            ], 200);
+        $AuthId = Auth::user()->id;
+        $appointments = AP::where('user_id', $AuthId)->get();
         
-        } catch (\Throwable $th) {
-            abort(500);
-        }
+        $cleanAppointments = AppointmentResource::collection($appointments);
+
+        return response()->json([
+            'appointments'=> $cleanAppointments            
+        ], 200);
     }
 
     /**
@@ -46,25 +41,20 @@ class AppointmentController extends Controller
      */
     public function store(ApRequest $request)
     {
-        try{
-            $appointmentData = $request->validated();
+        $appointmentData = $request->validated();
 
-            $appointmentData = [
-                'user_id' => Auth::user()->id, 
-                'service_id' => $appointmentData['service'],
-                'date' => $appointmentData['date'],
-                'start_time' => $appointmentData['start_time']
-            ];
+        $appointmentData = [
+            'user_id' => Auth::user()->id, 
+            'service_id' => $appointmentData['service'],
+            'date' => $appointmentData['date'],
+            'start_time' => $appointmentData['start_time']
+        ];
 
-            $createService = AP::create($appointmentData);
+        $createService = AP::create($appointmentData);
 
-            return response()->json([
-                'message' => 'Serviço agendado com sucesso!',
-            ], 201);
-
-        } catch (\Throwable $th) {
-            abort(500);
-        }
+        return response()->json([
+            'message' => 'Serviço agendado com sucesso!',
+        ], 201);
     }
 
     /**
@@ -88,8 +78,6 @@ class AppointmentController extends Controller
                 'message' => 'Você não tem permissão para acessar este agendamento.'
             ], 403);
 
-        }catch (\Throwable $th) {
-            abort(500);
         }
     }
 
@@ -122,9 +110,7 @@ class AppointmentController extends Controller
                 'message' => 'Você não tem permissão para acessar este agendamento.'
             ], 403);
 
-        } catch (\Throwable $th) {
-            abort(500);
-        }
+        } 
     }
 
     /**
@@ -147,9 +133,6 @@ class AppointmentController extends Controller
             return response()->json([
                 'message' => 'Você não tem permissão para acessar este agendamento.'
             ], 403);
-
-        } catch (\Throwable $th) {
-            abort(500);
-        }
+        } 
     }
 }

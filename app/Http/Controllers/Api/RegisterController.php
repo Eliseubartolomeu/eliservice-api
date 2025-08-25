@@ -47,8 +47,9 @@ class RegisterController extends Controller
 
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
+                'status'=>'false',
+                'message'=>'Não conseguimos criar a tua conta!',
+            ], 400);
         }
 
     }

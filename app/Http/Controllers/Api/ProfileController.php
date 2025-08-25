@@ -23,20 +23,13 @@ class ProfileController extends Controller
      */
     public function show(string $id)
     {
-        try {
-            $user = US::find($id);
-            $userData = new UserResource($user);
+        $user = US::find($id);
+        $userData = new UserResource($user);
 
-            return response()->json([
-                'user'=>$userData
-            
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
-        }
+        return response()->json([
+            'user'=>$userData
+        
+        ], 200);
     }
 
     /**
@@ -96,8 +89,11 @@ class ProfileController extends Controller
                 'message' => 'Dados atualizados com sucesso!'
             ], 201);
 
-        } catch (Throwable $th) {
-            abort(500);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status'=>'false',
+                'message'=>'Não conseguimos editar os teus dados!',
+            ], 400);
         }
 
     }
@@ -131,8 +127,11 @@ class ProfileController extends Controller
                     'message '=> 'Conta eliminada com sucesso',
                 ], 200);
             }
-        } catch (Throwable $th) {
-            abort(500);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status'=>'false',
+                'message'=>'Não conseguimos eliminar a tua conta!',
+            ], 400);
         }  
     }
 }

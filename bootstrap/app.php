@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -37,7 +39,6 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect()->route('logar');
         });
 
-        // 403 - Proibido
         $exceptions->render(function (AuthorizationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
@@ -47,7 +48,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // 404 - Não encontrado
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
@@ -57,7 +57,16 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // 500 - Erros genéricos
+        $exceptions->render(function (ValidationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Erro de validação',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+        });
+
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([

@@ -17,21 +17,15 @@ class ServiceController extends Controller
      */
     public function index()
     {        
-        try {
-            $services = SV::all();
-    
-            $cleanServices = ServiceResource::collection($services);
+        $services = SV::all();
 
-            return response()->json([
-                'services'=> $cleanServices
-            
-            ], 200);
+        $cleanServices = ServiceResource::collection($services);
 
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
-        }
+        return response()->json([
+            'services'=> $cleanServices
+        
+        ], 200);
+
     }
 
     /**
@@ -39,21 +33,15 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        try {
-            $service = SV::find($id);
+        $service = SV::find($id);
 
-            $cleanService = new ServiceResource($service);
+        $cleanService = new ServiceResource($service);
 
-            return response()->json([
-                'service'=> $cleanService
-            
-            ], 200);
+        return response()->json([
+            'service'=> $cleanService
+        
+        ], 200);
 
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Algo deu errado! Tente mais tarde...'
-            ], 500);
-        }
     }
 
 }
