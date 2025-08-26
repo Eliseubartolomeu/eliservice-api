@@ -4,6 +4,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 use Illuminate\Foundation\Application;
@@ -54,6 +55,15 @@ return Application::configure(basePath: dirname(__DIR__))
                     'status' => false,
                     'message' => 'Recurso não encontrado.',
                 ], 404);
+            }
+        });
+
+        $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Método não permitido.',
+                ], 405);
             }
         });
 

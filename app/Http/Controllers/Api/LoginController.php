@@ -31,6 +31,7 @@ class LoginController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
+                    'status' => false,
                     'message '=> 'Erro ao iniciar sessão',
                     'erros' => $validator->errors()
                 ], 422);
@@ -55,7 +56,7 @@ class LoginController extends Controller
             
         } catch (\Throwable $th) {
             return response()->json([
-                'status'=>'false',
+                'status' => false,
                 'message'=>'Não conseguimos iniciar a sessão!',
             ], 400);
         }
@@ -68,7 +69,7 @@ class LoginController extends Controller
     {
         $authUserData = new UserResource($user);        
         return response()->json([
-            'status'=>'true',
+            'status' => true,
             'token'=>$token,
             'user'=>$authUserData,
             'message'=> $user->name . ' Seja bem vindo!',
@@ -82,7 +83,7 @@ class LoginController extends Controller
     private function FailedLogin()
     {
         return response()->json([
-            'status'=>'false',
+            'status' => false,
             'message'=>'Dados incorretos! Revê o que escreveu errado e tente novamente',
         ], 400);
     }
@@ -98,13 +99,13 @@ class LoginController extends Controller
             $user->tokens()->delete();
 
             return response()->json([
-                'status'=>'true',
+                'status' => true,
                 'message'=>'A sua sessão foi terminada com sucesso!',
             ], 200);
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status'=>'false',
+                'status' => false,
                 'message'=>'Não conseguimos terminar a sua sessão por causa de um erro interno!',
             ], 400);
         }

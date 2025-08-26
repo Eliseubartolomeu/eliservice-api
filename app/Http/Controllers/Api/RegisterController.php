@@ -42,12 +42,13 @@ class RegisterController extends Controller
             $createUser = US::create($userData);
     
             return response()->json([
+                'status' => true,
                 'message' => 'Conta criada com sucesso!',
             ], 201);
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status'=>'false',
+                'status' => false,
                 'message'=>'Não conseguimos criar a tua conta!',
             ], 400);
         }

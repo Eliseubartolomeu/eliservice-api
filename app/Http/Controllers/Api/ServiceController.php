@@ -22,6 +22,7 @@ class ServiceController extends Controller
         $cleanServices = ServiceResource::collection($services);
 
         return response()->json([
+            'status' => true,
             'services'=> $cleanServices
         
         ], 200);
@@ -38,6 +39,7 @@ class ServiceController extends Controller
         $cleanService = new ServiceResource($service);
 
         return response()->json([
+            'status' => true,
             'service'=> $cleanService
         
         ], 200);

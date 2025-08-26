@@ -27,6 +27,7 @@ class ProfileController extends Controller
         $userData = new UserResource($user);
 
         return response()->json([
+            'status' => true,
             'user'=>$userData
         
         ], 200);
@@ -86,12 +87,13 @@ class ProfileController extends Controller
             $user->update($userData);
 
             return response()->json([
+                'status' => true,
                 'message' => 'Dados atualizados com sucesso!'
             ], 201);
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status'=>'false',
+                'status' => false,
                 'message'=>'Não conseguimos editar os teus dados!',
             ], 400);
         }
@@ -110,6 +112,7 @@ class ProfileController extends Controller
     
             if (!$Authuser) {
                 return response()->json([
+                    'status' => false,
                     'message '=> 'Lamentamos, mas o e-mail não está correto!',
                 ], 422);
     
@@ -124,12 +127,13 @@ class ProfileController extends Controller
                 $user->tokens()->delete();
     
                 return response()->json([
+                    'status' => true,
                     'message '=> 'Conta eliminada com sucesso',
                 ], 200);
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'status'=>'false',
+                'status' => false,
                 'message'=>'Não conseguimos eliminar a tua conta!',
             ], 400);
         }  

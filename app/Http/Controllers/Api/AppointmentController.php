@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\AuthController;
 use App\Models\{
     Appointment as AP,
+    Service as SV
 };
 use Illuminate\Support\{Carbon, Str};
 
@@ -32,6 +33,7 @@ class AppointmentController extends Controller
         $cleanAppointments = AppointmentResource::collection($appointments);
 
         return response()->json([
+            'status' => true,
             'appointments'=> $cleanAppointments            
         ], 200);
     }
@@ -43,18 +45,41 @@ class AppointmentController extends Controller
     {
         $appointmentData = $request->validated();
 
-        $appointmentData = [
-            'user_id' => Auth::user()->id, 
-            'service_id' => $appointmentData['service'],
-            'date' => $appointmentData['date'],
-            'start_time' => $appointmentData['start_time']
-        ];
+        
+        $existService = SV::where('id', $appointmentData['service'])->exists();
+        
+        if (!$existService) {
+            return response()->json([
+                'status' => false,
+                'message '=> 'O serviço fornecido não existe!',
+            ], 422);
 
-        $createService = AP::create($appointmentData);
+        }else {
+            $existAppointment = AP::where('user_id', Auth::user()->id)->where('service_id', $appointmentData['service'])->exists();
 
-        return response()->json([
-            'message' => 'Serviço agendado com sucesso!',
-        ], 201);
+            if ($existAppointment) {
+                return response()->json([
+                    'status' => false,
+                    'message '=> 'Você já tem esse serviço agendado, edite a data se aplicável!',
+                ], 422);
+            }
+    
+            $appointmentData = [
+                'user_id' => Auth::user()->id, 
+                'service_id' => $appointmentData['service'],
+                'date' => $appointmentData['date'],
+                'start_time' => $appointmentData['start_time']
+            ];
+    
+            $createService = AP::create($appointmentData);
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Serviço agendado com sucesso!',
+            ], 201);
+        }
+        
+
     }
 
     /**
@@ -75,6 +100,7 @@ class AppointmentController extends Controller
 
         }catch (AuthorizationException $e) {
             return response()->json([
+                'status' => false,
                 'message' => 'Você não tem permissão para acessar este agendamento.'
             ], 403);
 
@@ -102,11 +128,13 @@ class AppointmentController extends Controller
             $appointment->update($appointmentData);
 
             return response()->json([
+                'status' => true,
                 'message' => 'Agendamento atualizado com sucesso!',
             ], 201);
 
         }catch (AuthorizationException $e) {
             return response()->json([
+                'status' => false,
                 'message' => 'Você não tem permissão para acessar este agendamento.'
             ], 403);
 
@@ -126,11 +154,13 @@ class AppointmentController extends Controller
             $appointment->delete();
 
             return response()->json([
+                'status' => true,
                 'message' => 'Agendamento eliminado com sucesso!',
             ], 200);
 
         }catch (AuthorizationException $e) {
             return response()->json([
+                'status' => false,
                 'message' => 'Você não tem permissão para acessar este agendamento.'
             ], 403);
         } 
