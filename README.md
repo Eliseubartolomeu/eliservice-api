@@ -1,102 +1,182 @@
-# Eliservice API
+# 🚀 Eliservice API
 
-## Introdução
-O **Eliservice API** é um sistema desenvolvido em Laravel que permite aos usuários agendarem serviços em datas e horários específicos. Ele oferece uma interface para gerenciar usuários, serviços e agendamentos, com suporte a operações CRUD e autenticação.
+![version](https://img.shields.io/badge/version-1.0.0-blue)
+![Laravel](https://img.shields.io/badge/laravel-12.23.1-red)
+![status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+
+API desenvolvida em Laravel para agendamento de serviços. Permite autenticação de usuários, gerenciamento de perfis, serviços e agendamentos com suporte completo a operações CRUD.
+
+---
+
+## 📚 Sumário
+
+- [Funcionalidades](#-funcionalidades)
+- [Requisitos](#-requisitos)
+- [Instalação](#️-instalação)
+- [Autenticação](#-autenticação)
+- [Uso da API](#-uso-da-api)
+- [Endpoints](#-endpoints)
+- [Exemplos de Requisição](#-exemplos-de-requisição)
+- [Testes](#-testes)
+- [Contribuição](#-contribuição)
+- [Licença](#-licença)
+- [Considerações Finais](#-considerações-finais)
+
+---
 
 ## ✨ Funcionalidades
 
-- Login e Autenticação do usuário
-- Cadastrar usuário
-- Consultar usuário
-- Editar dados de usuário
-- Eliminar usuário
-- Consultar serviço (s)
-- Agendar serviço
-- Editar agendamento
-- Consultar agendamento (s)
-- Eliminar agendamento
+- Autenticação JWT (login, registro, logout)
+- Cadastro e gerenciamento de usuários
+- Consulta e gerenciamento de serviços
+- Agendamento de serviços com horário e data
+- Consulta e edição de agendamentos
+- Exclusão de usuários e agendamentos
+
+---
 
 ## ✅ Requisitos
+
 - PHP >= 8.0
 - Composer
 - MySQL
+- Laravel >= 10.x
+
+---
 
 ## ⚙️ Instalação
+
 1. Clone o repositório:
    ```bash
    git clone https://github.com/Eliseubartolomeu/eliservice-api.git
-   ```
-2. Navegue até o diretório do projeto:
+
+2. Acesse o diretório:
+
    ```bash
    cd eliservice-api
    ```
-3. Instale as dependências do PHP:
+
+3. Instale as dependências:
+
    ```bash
    composer install
    ```
-4. Configure o arquivo `.env`:
-   - Copie o arquivo de exemplo:
-     ```bash
-     cp .env.example .env
-     ```
+
+4. Copie o arquivo `.env` e configure:
+
+   ```bash
+   cp .env.example .env
+   ```
+
 5. Gere a chave da aplicação:
+
    ```bash
    php artisan key:generate
    ```
-6. Execute as migrações e seeds para configurar o banco de dados:
+
+6. Configure o banco de dados no arquivo `.env`:
+
+   ```
+   DB_DATABASE=eliservice
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+7. Execute as migrações e seeds:
+
    ```bash
    php artisan migrate --seed
    ```
-7. Inicie o servidor de desenvolvimento:
+
+8. Inicie o servidor:
+
    ```bash
    php artisan serve
    ```
 
-## Uso
-A API estará disponível em [http://127.0.0.1:8000/api](http://127.0.0.1:8000/api) (ou na porta configurada). Utilize ferramentas como Postman ou cURL para testar os endpoints.
+A API estará disponível em `http://127.0.0.1:8000/api`.
 
-## Documentação da API
+---
 
-### Endpoints
+## 🔐 Autenticação
 
-#### 1. **Autenticação**
-- **POST /api/login**: Realiza login e retorna um token JWT.
-- **POST /api/register**: Registra um novo usuário.
-- **POST /api/logout**: Encerra a sessão do usuário.
+A API utiliza **JWT** para autenticação. Após o login, você receberá um token que deve ser incluído no header das requisições protegidas:
 
-#### 2 **Home**
-- **GET /api/home**: Retorna os serviços disponiveis e os usuários com o número de agendamentos feitos.
+**Exemplo de Header:**
 
-#### 3. **Perfil**
-- **GET /api/profile/:id**: Retorna os detalhes de um usuário.
-- **PUT /api/profile/:id**: Atualiza os dados do usuário autenticado..
-- **DELETE /api/delete-profile/:id**: Remove os dados do usuário autenticado..
+```
+Authorization: Bearer SEU_TOKEN_JWT
+```
 
-#### 4. **Serviços**
-- **GET /api/services**: Retorna a lista de serviços disponíveis.
-- **GET /api/services/:id**: Retorna os detalhes de um serviço.
+---
 
-#### 5. **Agendamentos**
-- **GET /api/appointments**: Retorna a lista de agendamentos do usuário autenticado.
-- **POST /api/appointments**: Cria um novo agendamento.
-- **GET /api/appointments/:id**: Retorna os detalhes de um agendamento.
-- **PUT /api/appointments/:id**: Atualiza os dados de um agendamento.
-- **DELETE /api/appointments/:id**: Elimina um agendamento.
+## 📦 Uso da API
 
+Recomenda-se o uso de ferramentas como [Postman](https://www.postman.com/) ou `curl` para testar os endpoints da API.
 
-### Exemplo de Requisição
+---
+
+## 📌 Endpoints
+
+### 1. **Autenticação**
+
+| Método | Endpoint        | Descrição                    |
+| ------ | --------------- | ---------------------------- |
+| POST   | `/api/register` | Registrar um novo usuário    |
+| POST   | `/api/login`    | Realizar login e obter token |
+| POST   | `/api/logout`   | Efetuar logout               |
+
+---
+
+### 2. **Usuário / Perfil**
+
+| Método | Endpoint                   | Descrição                   |
+| ------ | -------------------------- | --------------------------- |
+| GET    | `/api/profile/{id}`        | Obter dados do usuário      |
+| PUT    | `/api/profile/{id}`        | Atualizar perfil do usuário |
+| DELETE | `/api/delete-profile/{id}` | Excluir perfil do usuário   |
+
+---
+
+### 3. **Serviços**
+
+| Método | Endpoint             | Descrição                |
+| ------ | -------------------- | ------------------------ |
+| GET    | `/api/services`      | Listar todos os serviços |
+| GET    | `/api/services/{id}` | Detalhes de um serviço   |
+
+---
+
+### 4. **Agendamentos**
+
+| Método | Endpoint                 | Descrição                      |
+| ------ | ------------------------ | ------------------------------ |
+| GET    | `/api/appointments`      | Listar agendamentos do usuário |
+| POST   | `/api/appointments`      | Criar novo agendamento         |
+| GET    | `/api/appointments/{id}` | Detalhes de um agendamento     |
+| PUT    | `/api/appointments/{id}` | Atualizar um agendamento       |
+| DELETE | `/api/appointments/{id}` | Excluir agendamento            |
+
+---
+
+## 📤 Exemplos de Requisição
+
+### 🔸 Criar Agendamento
+
 **POST /api/appointments**
+
+**Request:**
+
 ```json
-{ 
+{
   "service": "8ff200db-2fa2-4823-a4d2-2d6ee7a72ace",
   "date": "2025-11-10",
   "start_time": "17:11"
 }
-
-
 ```
 
-**Resposta**
+**Response:**
+
 ```json
 {
   "success": true,
@@ -104,11 +184,16 @@ A API estará disponível em [http://127.0.0.1:8000/api](http://127.0.0.1:8000/a
 }
 ```
 
-**GET api/profile/3ced6879-488c-4443-9e9b-46458a947ee7**
+---
 
-**Resposta**
+### 🔹 Obter Perfil
+
+**GET /api/profile/3ced6879-488c-4443-9e9b-46458a947ee7**
+
+**Response:**
+
 ```json
-   {
+{
   "user": {
     "Nome": "Eliseu Developer",
     "Foto": null,
@@ -119,29 +204,37 @@ A API estará disponível em [http://127.0.0.1:8000/api](http://127.0.0.1:8000/a
 }
 ```
 
+---
 
-## Contribuição
+## 🧪 Testes
 
-Contribuições são bem-vindas! Siga os passos abaixo para contribuir:
+> ⚠️ Em breve será incluída cobertura completa de testes automatizados.
 
-1. Faça um fork do projeto. 
-  
-2. Crie uma branch para sua feature ou correção:
-   ```bash
-   git checkout -b minha-feature
-   ```
-3. Faça commit das suas alterações:
-   ```bash
-   git commit -m "Descrição da minha feature"
-   ```
-4. Envie para o repositório remoto:
-   ```bash
-   git push origin minha-feature
-   ```
-5. Abra um Pull Request.
+---
 
-## Considerações
+## 🛠 Contribuição
 
-Se o projecto for significar alguma coisa deixa um star ⭐ no repositório
+Contribuições são bem-vindas! 💪
 
-Estamos juntos...
+1. Fork este repositório
+2. Crie sua branch: `git checkout -b minha-feature`
+3. Commit: `git commit -m 'Minha nova feature'`
+4. Push: `git push origin minha-feature`
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+---
+
+## ⭐ Considerações Finais
+
+Se este projeto for útil para você, deixe uma ⭐ no repositório!
+Isso ajuda a dar visibilidade e incentiva a evolução contínua do projeto.
+
+Estamos juntos! 🚀
+
+##
