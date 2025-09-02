@@ -15,10 +15,10 @@ class ServiceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'Serviço' => $this->name,
-            'Descrição' => $this->description,
-            'Tempo' => $this->duration .' min',
-            'Preço' => $this->price .' AKZ',
+            'name' => $this->name,
+            'description' => $this->description,
+            'duration' => $this->duration .' min',
+            'price' => $this->price .' AKZ',
         ];
     }
 }

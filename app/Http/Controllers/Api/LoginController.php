@@ -67,12 +67,11 @@ class LoginController extends Controller
      */
     private function SuccessfulLogin($user, $token)
     {
-        $authUserData = new UserResource($user);        
         return response()->json([
             'status' => true,
+            'id' => $user->id,
+            'email' => $user->email,
             'token'=>$token,
-            'user'=>$authUserData,
-            'message'=> $user->name . ' Seja bem vindo!',
         ], 200);
 
     }
