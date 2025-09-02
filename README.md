@@ -112,7 +112,7 @@ Authorization: Bearer SEU_TOKEN_JWT
 
 ## 📦 Uso da API
 
-Recomenda-se o uso de ferramentas como [Postman](https://www.postman.com/) ou `curl` para testar os endpoints da API.
+Recomenda-se o uso de ferramentas como `insomnia`, `Thunder Client`, [-Postman](https://www.postman.com/) ou `curl` para testar os endpoints da API.
 
 ---
 
@@ -179,7 +179,7 @@ Recomenda-se o uso de ferramentas como [Postman](https://www.postman.com/) ou `c
 
 ```json
 {
-  "success": true,
+  "status": true,
   "message": "Serviço agendado com sucesso!"
 }
 ```
@@ -194,12 +194,13 @@ Recomenda-se o uso de ferramentas como [Postman](https://www.postman.com/) ou `c
 
 ```json
 {
+  "status": true,
   "user": {
-    "Nome": "Eliseu Developer",
-    "Foto": null,
-    "Nome de usuário": "develiseu",
-    "E-mail": "eliseu@teste.com",
-    "Aderiu em": "21-08-2025"
+    "name": "Eliseu Fullstack",
+    "photo": null,
+    "username": "admin",
+    "email": "eliseu@mail.com",
+    "registed_at": "21-08-2025"
   }
 }
 ```
