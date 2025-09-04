@@ -39,6 +39,7 @@ class AppointmentResource extends JsonResource
         $newDate = "{$ApDay} de {$Apmonth} de {$ApYear}";
 
         return [
+            'id'=>$this->id,
             'service' => $this->service->name,
             'date' => $newDate,
             'start_time' => Carbon::parse($this->start_time)->format('h:i'),
